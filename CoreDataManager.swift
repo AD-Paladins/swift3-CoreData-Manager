@@ -50,12 +50,18 @@ class CoreDataManager{
      * Lista de funciones para utilizar como predicados
      */
     
-    static func Contiene(texto: String) ->NSPredicate{
-        return NSPredicate(format: "name contains[c] %@", texto)
+    static func Donde(campo: String, contiene texto: String, caseSensitive: Bool) ->NSPredicate{
+        //"%K CONTAINS[c] %@", campo, texto
+        if caseSensitive {
+            return NSPredicate(format: "%K CONTAINS %@", campo, texto)
+        }else{
+            return NSPredicate(format: "%K CONTAINS[c] %@", campo, texto)
+        }
+        
     }
     
     static func Donde(campo: String, es esto: String) ->NSPredicate{
-        return NSPredicate(format: "\(campo) = %@", esto)
+        return NSPredicate(format: "%K = %@", campo, esto)
     }
     
 //    static func adsad() -> NSPredicate{
