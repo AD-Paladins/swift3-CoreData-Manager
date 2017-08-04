@@ -45,6 +45,23 @@ class CoreDataManager{
         }
     }
     
+    
+    /**
+     * SortDecriptor
+     * Sorting list
+     */
+
+    static func OrdenarPor(campos: [String], ascendente: Bool) -> [NSSortDescriptor]{
+        var sorts = [NSSortDescriptor]()
+        if(campos.count > 0){
+            for campo in campos {
+               sorts.append(NSSortDescriptor(key: campo, ascending: ascendente))
+            }
+        }
+        return sorts
+    }
+    
+    
     /**
      * Predicados
      * Lista de funciones para utilizar como predicados
