@@ -3,10 +3,16 @@
 //  appgenerica
 //
 
+
 import Foundation
 import CoreData
 
 class CoreDataManager{
+    
+    /**
+     *  Select de datos
+     * Se retorna array de los objetos encontrados en la busqueda
+     */
     static func listaDe<T: NSManagedObject>(entity: T.Type,
                         multiPredicate: [NSPredicate]? = nil,
                         sortDescriptor: [NSSortDescriptor]? = nil,
@@ -45,12 +51,59 @@ class CoreDataManager{
         }
     }
     
+    /**
+     * Borrado de datos
+     * Se borran los objetos encontrados en la busqueda
+     */
+    static func borrarObjetos<T: NSManagedObject>(entity: T.Type,
+                              multiPredicate: [NSPredicate]? = nil,
+                              sortDescriptor: [NSSortDescriptor]? = nil,
+                              context: NSManagedObjectContext = CoreDataStack.managedObjectContext) -> Bool? {
+        var response = false
+        let fetchRequest = NSFetchRequest<T>(entityName: NSStringFromClass(T.self))
+        
+        var predicates = [NSPredicate]()
+        if(multiPredicate != nil){
+            for predic in multiPredicate!{
+                predicates.append(predic)
+            }
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        }
+        
+        if sortDescriptor != nil {
+            fetchRequest.sortDescriptors = sortDescriptor!
+        }
+        
+        fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            
+            let searchResult = try context.fetch(fetchRequest)
+            if searchResult.count > 0 {
+                // returns mutable copy of result array
+                for object in searchResult {
+                    context.delete(object)
+                }
+                response = true
+            }
+            do {
+                try context.save() // <- remember to put this :)
+            } catch {
+                return nil
+            }
+            
+            return response
+        } catch {
+            print(error.localizedDescription)
+            return nil
+        }
+    }
+    
     
     /**
      * SortDecriptor
      * Sorting list
      */
-
     static func OrdenarPor(campos: [String], ascendente: Bool) -> [NSSortDescriptor]{
         var sorts = [NSSortDescriptor]()
         if(campos.count > 0){
@@ -68,7 +121,6 @@ class CoreDataManager{
      */
     
     static func Donde(campo: String, contiene texto: String, caseSensitive: Bool) ->NSPredicate{
-        //"%K CONTAINS[c] %@", campo, texto
         if caseSensitive {
             return NSPredicate(format: "%K CONTAINS %@", campo, texto)
         }else{
@@ -78,8 +130,41 @@ class CoreDataManager{
     }
     
     static func Donde(campo: String, es esto: String) ->NSPredicate{
-        return NSPredicate(format: "%K = %@", campo, esto)
+        return NSPredicate(format: "%K == %@", campo, esto)
     }
+    
+    static func Ignorar(en campo: String, esto: String) ->NSPredicate{
+        return NSPredicate(format: "NOT %K BEGINSWITH %@", campo, esto)
+    }
+    
+    static func DoceHorasAtras() ->NSPredicate{
+        //El intervalo de tiempo se realiza en segundos
+        let twelveHoursAgo = Date().addingTimeInterval(-43200)
+        return NSPredicate(format: "date > %@", twelveHoursAgo as NSDate)
+    }
+    
+    static func DesdeHasta(campoFecha: String, desde: Date, hasta: Date) ->NSPredicate{
+        
+        return NSPredicate(
+            format: "%K > %@ AND %K < %@",
+            campoFecha, desde as NSDate,
+            campoFecha, hasta as NSDate
+        )
+    }
+    
+    static func EmpiezaCon(campo: String, texto: String) ->NSPredicate{
+        return NSPredicate(format: "%K BEGINSWITH %@", campo, texto)
+    }
+    
+    static func TerminaCon(campo: String, texto: String) ->NSPredicate{
+        return NSPredicate(format: "%K ENDSWITH %@", campo, texto)
+    }
+    
+    static func CoincidenciaDe(campo: String, con regExp: String) ->NSPredicate{
+        return NSPredicate(format: "%K MATCHES %@", campo, regExp)
+    }
+    
+    
     
 //    static func adsad() -> NSPredicate{
 //        return NSPredicate(format: "name contains[c] %@ AND nickName contains[c] %@", argumentArray: [name, nickname])
@@ -89,6 +174,7 @@ class CoreDataManager{
     
     
 }
+
 
 
         //USAGE
