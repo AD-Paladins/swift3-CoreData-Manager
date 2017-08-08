@@ -3,7 +3,6 @@
 //  appgenerica
 //
 
-
 import Foundation
 import CoreData
 
@@ -164,6 +163,24 @@ class CoreDataManager{
         return NSPredicate(format: "%K MATCHES %@", campo, regExp)
     }
     
+    static func ComponerPredicado(camposPredicados: [String:String]) ->NSPredicate?{
+        if(camposPredicados.count <= 0){
+            return nil
+        }
+        //FALTA TERMINAR ESTA PARTE
+        return nil
+    }
+    
+//    static func SoloStrings(){
+//        let objects = ["hip", 2, "", "hip", "ss"] as [Any]
+//        
+//        let removeNonStrings = NSPredicate { (evaluatedObject, _) in
+//            return evaluatedObject.isKindOfClass(NSString)
+//        }
+//        
+//        let hipHipArray = (objects as NSArray).filteredArrayUsingPredicate(removeNonStrings)
+//        
+//    }
     
     
 //    static func adsad() -> NSPredicate{
