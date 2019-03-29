@@ -1,5 +1,8 @@
 # swift3-CoreData-Manager
 
+io page version: https://titopalito.github.io/swift3-CoreData-Manager/
+
+
 This is my first approach to do a basic and easy to use CoreData framework.
 I'll appreciate any suggestion.
 
